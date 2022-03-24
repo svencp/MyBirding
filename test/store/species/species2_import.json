@@ -1,0 +1,28 @@
+{
+  "yuwh2": {
+    "sname": "Yuhina diademata",
+    "name": "White-collared Yuhina",
+    "fname": "Yuhina White-collared",
+    "code": "yuwh2",
+    "order": "Zosteropidae",
+    "family": "Passeriformes",
+    "status": null,
+    "afname": null,
+    "aname": null,
+    "acode": null,
+    "list": null
+  },
+  "susu1": {
+    "sname": "Calidris virgata",
+    "name": "Surfbird Sugar",
+    "fname": "Sugar Surfbird",
+    "code": "susu1",
+    "order": "Charadriiformes",
+    "family": "Scolopacidae (Spipers Allies)",
+    "status": "Rare",
+    "afname": "Sparrow Listing",
+    "aname": "Listing Sparrow",
+    "acode": "spli7",
+    "list":   null
+  }
+}

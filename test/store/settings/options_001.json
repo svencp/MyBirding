@@ -1,0 +1,68 @@
+{
+  "map": {
+    "deadBirdIsSighting": {
+      "value": "true",
+      "show": true
+    },
+    "lastSightingViewed": {
+      "value": "0",
+      "show": false
+    },
+    "lastSpeciesViewed": {
+      "value": "53",
+      "show": false
+    },
+    "myBlack": {
+      "value": "(0, 0, 0)",
+      "show": true
+    },
+    "myBlue": {
+      "value": "(0, 0, 177)",
+      "show": true
+    },
+    "myBlueGreen": {
+      "value": "(0, 177, 177)",
+      "show": true
+    },
+    "myGreen": {
+      "value": "(0, 177, 0)",
+      "show": true
+    },
+    "myLightGray": {
+      "value": "(220, 220, 220)",
+      "show": true
+    },
+    "myNormalGray": {
+      "value": "(177, 177, 177)",
+      "show": true
+    },
+    "myOlive": {
+      "value": "(177, 177, 0)",
+      "show": true
+    },
+    "myPurple": {
+      "value": "(110, 0, 110)",
+      "show": true
+    },
+    "myRed": {
+      "value": "(177, 0, 0)",
+      "show": true
+    },
+    "replaceSameSname": {
+      "value": "true",
+      "show": true
+    },
+    "showResponseTimes": {
+      "value": "true",
+      "show": true
+    },
+    "showSpeciesIndex": {
+      "value": "false",
+      "show": true
+    },
+    "speciesBoxStyle": {
+      "value": "Thick",
+      "show": true
+    }
+  }
+}

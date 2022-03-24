@@ -1,0 +1,54 @@
+{
+  "yuwh2": {
+    "sname": "Yuhina diademata",
+    "name": "White-collared Yuhina",
+    "fname": "Yuhina White-collared",
+    "code": "yuwh2",
+    "order": "Zosteropidae",
+    "family": "Passeriformes",
+    "status": "",
+    "afname": "",
+    "aname": "",
+    "acode": "",
+    "list": ""
+  },
+  "jabl": {
+    "sname": "Cyanocitta cristata",
+    "name": "Blue Jay",
+    "fname": "Jay Blue",
+    "code": "jabl",
+    "order": "Passeriformes",
+    "family": "Corvidae (Crows & Jays & Magpies)",
+    "status": "Quiet Common",
+    "afname": "Sparrow Little",
+    "aname": "Little Sparrow",
+    "acode": "spli1",
+    "list": "North America"
+  },
+  "susu": {
+    "sname": "Calidris pugnax",
+    "name": "Susie Suun",
+    "fname": "Ruff",
+    "code": "susu",
+    "order": "Charadriiformes",
+    "family": "Scolopacidae (Spipers Allies)",
+    "status": "LC",
+    "afname": "Sparrow Littleling",
+    "aname": "Littleling Sparrow",
+    "acode": "spli",
+    "list": "Southern Africa"
+  },
+  "susu1": {
+    "sname": "Calidris virgata",
+    "name": "Surfbird Sugar",
+    "fname": "Sugar Surfbird",
+    "code": "susu1",
+    "order": "Charadriiformes",
+    "family": "Scolopacidae (Spipers Allies)",
+    "status": "Rare",
+    "afname": "Sparrow Listing",
+    "aname": "Listing Sparrow",
+    "acode": "spli7",
+    "list":   ""
+  }
+}
