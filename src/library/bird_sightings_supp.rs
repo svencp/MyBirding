@@ -13,7 +13,6 @@ use super::settings::SettingsText;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fmt::{Debug};
-// use std::cmp::min;
 use std::cmp::Ordering;
 use crate::library::bird_sightings::*;
 
@@ -718,7 +717,7 @@ pub fn show_edit(old: WhatNumber, new: WhatNumber) {
 // Function to get shortcut, if one was given
 pub fn get_shortcut(last: Vec<String>, arg: &str, sightings: &Vec<Sightings>) -> Result<Option<Sightings>, String> {
     
-    let mut ret: Option<Sightings> = None;
+    // let mut ret: Option<Sightings> = None;
     let mut to_be_added: Sightings = Sightings::new();
     let mut only_one_shortcut = true;
     let mut has_values = false;

@@ -6,7 +6,6 @@
 */
 
 use crate::library::bird_sightings::*;
-// use crate::library::bird_species_support::*;
 use crate::library::my_file_funcs::*;
 use crate::library::bird_species::*;
 use crate::library::settings::*;
@@ -14,7 +13,6 @@ use draw_box::{Char};
 use termion::{color, style};
 use thousands::{Separable};
 use std::collections::BTreeMap;
-// use std::string;
 use super::bird_species_support::CodeOrNumber;
 
 

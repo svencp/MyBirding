@@ -832,83 +832,83 @@ pub fn add_sighting<'a>(last: Vec<String>, arg: &str, birds: &BTreeMap<String, S
 }
 
 
-// Function to validate a sighting
-pub fn validate_sighting<'a>(sbirds: &BTreeMap<String, Species>, sighting: &'a mut Sightings) -> Result<&'a mut Sightings, String> {
+// // Function to validate a sighting
+// pub fn validate_sighting<'a>(sbirds: &BTreeMap<String, Species>, sighting: &'a mut Sightings) -> Result<&'a mut Sightings, String> {
 
-    //Lets start with sname
-    let r_sname = sbirds.get(&sighting.sname);
-    if r_sname.is_none(){
-        return Err("Validation error: sname".to_string())
-    }
+//     //Lets start with sname
+//     let r_sname = sbirds.get(&sighting.sname);
+//     if r_sname.is_none(){
+//         return Err("Validation error: sname".to_string())
+//     }
 
-    if sighting.date == 0 {
-        return Err("Validation error: no date given".to_string())
-    }
+//     if sighting.date == 0 {
+//         return Err("Validation error: no date given".to_string())
+//     }
 
-    // Lets do the Town                                                                     -- Town
-    let mut i_town = title_case(sighting.town.trim());
-    if i_town.len() == 0 {
-        return Err("Error in giving no town".to_string());
-    }
-    if i_town.len() > 39 {
-        i_town = i_town[0..40].to_string();
-    }
-    sighting.town = i_town;
-
-
-    // Lets do the Province                                                                 -- Province
-    let mut i_province = title_case(sighting.province.trim());
-    if i_province.len() == 0 {
-        return Err("Error in giving no province/state".to_string());
-    }
-    if i_province.len() > 39 {
-        i_province = i_province[0..40].to_string();
-    }
-    sighting.province = i_province; 
+//     // Lets do the Town                                                                     -- Town
+//     let mut i_town = title_case(sighting.town.trim());
+//     if i_town.len() == 0 {
+//         return Err("Error in giving no town".to_string());
+//     }
+//     if i_town.len() > 39 {
+//         i_town = i_town[0..40].to_string();
+//     }
+//     sighting.town = i_town;
 
 
-    // Lets do the Country                                                                  -- Country
-    let mut i_country = title_case(sighting.country.trim());
-    if i_country.len() == 0 {
-        return Err("Error in giving no country".to_string());
-    }
-    if i_country.len() > 39 {
-        i_country = i_country[0..40].to_string();
-    }
-    sighting.country = i_country; 
+//     // Lets do the Province                                                                 -- Province
+//     let mut i_province = title_case(sighting.province.trim());
+//     if i_province.len() == 0 {
+//         return Err("Error in giving no province/state".to_string());
+//     }
+//     if i_province.len() > 39 {
+//         i_province = i_province[0..40].to_string();
+//     }
+//     sighting.province = i_province; 
 
 
-    // Lets do the Comments                                                                  -- Country
-    let mut i_comments = sighting.comments.trim();
-    if i_comments.len() > 120 {
-        i_comments = &i_comments[0..120];
-    }
-    sighting.comments = i_comments.to_string(); 
+//     // Lets do the Country                                                                  -- Country
+//     let mut i_country = title_case(sighting.country.trim());
+//     if i_country.len() == 0 {
+//         return Err("Error in giving no country".to_string());
+//     }
+//     if i_country.len() > 39 {
+//         i_country = i_country[0..40].to_string();
+//     }
+//     sighting.country = i_country; 
 
 
-    // Has anything been observed
-    let mut bool_counter = 0;
-    if sighting.seen {bool_counter += 1;}
-    if sighting.heard {bool_counter += 1;}
-    if sighting.ringed {bool_counter += 1;}
-    if sighting.dead {bool_counter += 1;}
-    if sighting.photo {bool_counter += 1;}
-    if sighting.male {bool_counter += 1;}
-    if sighting.female {bool_counter += 1;}
-    if sighting.adult {bool_counter += 1;}
-    if sighting.immature {bool_counter += 1;}
-    if sighting.breeding {bool_counter += 1;}
-    if sighting.eggs {bool_counter += 1;}
-    if sighting.nonbreeding {bool_counter += 1;}
-    if sighting.chicks {bool_counter += 1;}
-    if sighting.nest {bool_counter += 1;}
+//     // Lets do the Comments                                                                  -- Country
+//     let mut i_comments = sighting.comments.trim();
+//     if i_comments.len() > 120 {
+//         i_comments = &i_comments[0..120];
+//     }
+//     sighting.comments = i_comments.to_string(); 
+
+
+//     // Has anything been observed
+//     let mut bool_counter = 0;
+//     if sighting.seen {bool_counter += 1;}
+//     if sighting.heard {bool_counter += 1;}
+//     if sighting.ringed {bool_counter += 1;}
+//     if sighting.dead {bool_counter += 1;}
+//     if sighting.photo {bool_counter += 1;}
+//     if sighting.male {bool_counter += 1;}
+//     if sighting.female {bool_counter += 1;}
+//     if sighting.adult {bool_counter += 1;}
+//     if sighting.immature {bool_counter += 1;}
+//     if sighting.breeding {bool_counter += 1;}
+//     if sighting.eggs {bool_counter += 1;}
+//     if sighting.nonbreeding {bool_counter += 1;}
+//     if sighting.chicks {bool_counter += 1;}
+//     if sighting.nest {bool_counter += 1;}
     
-    if bool_counter == 0 {
-        return Err("Nothing has beed observed.".to_string())
-    }
+//     if bool_counter == 0 {
+//         return Err("Nothing has beed observed.".to_string())
+//     }
 
-    Ok(sighting)
-}
+//     Ok(sighting)
+// }
 
 
 
