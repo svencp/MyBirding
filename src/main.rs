@@ -67,24 +67,21 @@ fn main() {
     let mut options = SettingsText::new(OPTIONS_FILENAME);
     
     // Birds
-    // let destination_birds = "./birds.bin";
     let destination_birds = SPECIES_BIN_FILENAME;
     // **************************************************************************************                       Remove Later
     if ! Path::new(destination_birds).exists() {
-        let source_birds = "./test/store/species/birds.bin";
-        // let source_birds = "./test/store/species/search_species.csv";
-        copy(source_birds,destination_birds).expect("Failed to copy");
+        // let source_birds = "./test/store/species/birds.bin";
+        // copy(source_birds,destination_birds).expect("Failed to copy");
     }
     let birds_file = Species::load(destination_birds);
-    // let birds_file = Species::import_csv(destination_birds, &mut birds);
     let mut birds_file_ok = false;
     if birds_file.is_ok() {
         birds_file_ok = true;
 
-        // This BTreeMap has the code is the key
+        // This BTreeMap has the code as the key
         birds = birds_file.unwrap();
     }
-    // This BTreeMap has the sname is the key
+    // This BTreeMap has the sname as the key
     sbirds = make_sname_btree(&birds);
     
     
