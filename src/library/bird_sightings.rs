@@ -615,7 +615,7 @@ impl Sightings {
 
 
         // Lets do the Country                                                                  -- Country
-        let mut i_country = title_case(self.country.trim());
+        let mut i_country = self.country.trim().to_string();
         if i_country.len() == 0 {
             return Err("Error in giving no country".to_string());
         }

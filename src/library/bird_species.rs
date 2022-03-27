@@ -446,7 +446,6 @@ impl Species {
 
         // Validation time and some processing                                       -- order
         let s_order = order.trim().to_title_case();
-        // let i_order: String = order.trim().to_title_case();  
         let i_order = limit_length(s_order, NAME_39);                                 
         if i_order.len() < 3 {
             return Err("Not a valid order".to_string());
@@ -494,9 +493,8 @@ impl Species {
         let mut i_status: String = "".to_string();
         if status.len() > 0 {
             let temp = status.trim().to_string();
-            // let j_status = title_case(&temp);
-            let j_status = temp.to_uppercase();
-            i_status = limit_length(j_status, NAME_39);
+            // let j_status = temp.to_uppercase();
+            i_status = limit_length(temp, NAME_39);
 
         } 
 
@@ -1195,7 +1193,7 @@ pub fn prepare_species_edit(arg: String, old_species: Species, birds: &BTreeMap<
         family = old_species.family;
     }
 
-    let r_order = deconstruct_bird_str('o', &arg);
+    let r_order = deconstruct_bird_str('r', &arg);
     if r_order.is_ok() {
         order = r_order.unwrap();
     } else {

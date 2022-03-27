@@ -70,8 +70,8 @@ fn main() {
     let destination_birds = SPECIES_BIN_FILENAME;
     // **************************************************************************************                       Remove Later
     if ! Path::new(destination_birds).exists() {
-        // let source_birds = "./test/store/species/birds.bin";
-        // copy(source_birds,destination_birds).expect("Failed to copy");
+        let source_birds = "./test/store/species/birds.bin";
+        copy(source_birds,destination_birds).expect("Failed to copy");
     }
     let birds_file = Species::load(destination_birds);
     let mut birds_file_ok = false;
@@ -88,15 +88,12 @@ fn main() {
     
     // Sightings
     let destination_sightings = SIGHTINGS_BIN_FILENAME;
-    // let destination_sightings = "./sights.json";
     // **************************************************************************************                       Remove Later
     if ! Path::new(destination_sightings).exists() {
         let source_sights = "./test/store/sightings/sightings.bin";
-        // let source_sights = "./test/store/sightings/search_sights.json";
         copy(source_sights,destination_sightings).expect("Failed to copy");
     }
     let sightings_file = Sightings::load(destination_sightings);
-    // let sightings_file = Sightings::import(destination_sightings);
     let mut sightings_file_ok = false;
     if sightings_file.is_ok() {
         sightings_file_ok = true;
@@ -552,7 +549,7 @@ fn main() {
                 } //end of sub1.is_none()                  
             } // end of "bd"
             
-
+            
             "oe" => {
                 if_sightings_length_is_zero(&sightings);
                 let last_10 = get_last_10(&sightings);
@@ -572,13 +569,13 @@ fn main() {
                         }
                         let new_pos = result.unwrap() + 1;
                         let new = what_number(&new_pos.to_string(), &sbirds, &sightings);
-
+                        
                         let rev_10 = get_last_10(&sightings);
                         display_last_10(&options, rev_10);
-
+                        
                         show_sightings_number(new.clone(), &mut options, &sbirds, &mut sightings);
                         show_edit(old.clone(), new.clone());
-
+                        
                         file_change_sightings = true;
                     }
                     // sub2 is None
@@ -597,7 +594,7 @@ fn main() {
                 }  
             }
             
-
+            
             "of"  => {
                 if_sightings_length_is_zero(&sightings);
                 
@@ -623,6 +620,57 @@ fn main() {
                 }  //end of sub1.is_none()                                
             }// end of "ob"
             
+            "oim"  => {
+                if sub1.is_some(){
+                    let file = sub1.unwrap().trim().to_owned();
+                    let ext = get_extension_from_filename(&file);
+                    if ext.is_none(){
+                        let message = format!("Wrong file extension given: (either json or csv)");
+                        feedback(Feedback::Error, message);
+                        exit(17);
+                    }
+                    
+                    // lets clear out sightings
+                    sightings = Vec::new();
+                    
+                    match ext.unwrap() {
+                        "csv" => {
+                            let result = Species::import_csv(&file, &mut birds);
+                            if result.is_err(){
+                                let message = result.err().unwrap();
+                                feedback(Feedback::Error, message);
+                                exit(17);
+                            }
+                            file_change_birds = true;
+                        }
+                        
+                        "json" => {
+                            let result = Species::import(&file);
+                            if result.is_err(){
+                                let message = result.err().unwrap();
+                                feedback(Feedback::Error, message);
+                                exit(17);
+                            }
+                            birds = result.unwrap();
+                            file_change_birds = true;
+                        }
+                        
+                        // Other ones
+                        _ => {
+                            let message = format!("Wrong file extension given: (either json or csv)");
+                            feedback(Feedback::Error, message);
+                            exit(17);
+                        }
+                    }
+                }
+                // sub1 is NONE
+                else {
+                    let message = format!("bimp needs another argument, which is the file name.");
+                    feedback(Feedback::Error, message);
+                    exit(17);
+                }
+                
+            } // end of "bimp"
             
             
             "oz" => {
@@ -635,7 +683,7 @@ fn main() {
                 if yes.is_number {
                     show_sightings_number(yes, &mut options, &sbirds, &mut sightings);
                 } 
-
+                
                 if sub1.is_some(){
                     let message = format!("oz does not take any arguments itsself.");
                     feedback(Feedback::Warning, message);
