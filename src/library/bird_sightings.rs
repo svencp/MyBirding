@@ -29,9 +29,9 @@ use termion::{color, style};
 use chrono::prelude::*;
 use chrono::Utc;
 use std::time::{UNIX_EPOCH, Duration};
-// use thousands::Separable;
-
-
+use core::str::ParseBoolError;
+use std::io::{BufReader};
+use std::fs::File;
 
 
 #[allow(dead_code)]
@@ -279,7 +279,41 @@ impl Sightings {
         };
         Ok(map)
     }
+    
+    pub fn import_csv(csv_file: &str, sbirds: &BTreeMap<String,Species>, birds: &BTreeMap<String,Species> ) 
+                        -> Result<Vec<Sightings>, String> {
+        let mut counter = 0;
+        let mut s: Vec<Sightings> = Vec::new();
+       
+        let f = File::open(csv_file);
+        if f.is_err(){
+            return Err("Cannot open csv file for reading".to_string());
+        }
+        let reader = BufReader::new(f.unwrap());
 
+        for line in reader.lines() {
+            if line.is_ok(){
+                // Don't read header line
+                if counter == 0 {
+                    counter += 1;
+                    continue;
+                }
+
+                let r_line = get_sighting_from_line(&line.unwrap(), &sbirds);
+                if r_line.is_err(){
+                    let message = r_line.err().unwrap();
+                    feedback(Feedback::Error, message);
+                    let mess1 = format!("Problem converting line, around number {}", counter);
+                    return Err(mess1);
+                }
+                s.push(r_line.unwrap())
+                
+            }
+        }
+
+
+        Ok(s)
+    }
 
     pub fn save(bin_file: &str, sightings: &Vec<Sightings>) -> Result<(), String> {
         
@@ -934,27 +968,6 @@ pub fn edit_sighting(arg: &str, wn: WhatNumber, birds: &BTreeMap<String,Species>
     let non_zero = wn.number.unwrap();
     let mut to_edit = sightings.get(non_zero).unwrap().clone();
 
-    // // Do booleans ONLY if some booleans were mentioned
-    // let r_bool = to_edit.do_booleans(arg, true);
-    // if r_bool.is_err(){
-    //     return Err(r_bool.err().unwrap())
-    // }
-    // to_edit = r_bool.unwrap();
-    
-    // // do places
-    // let r_places = to_edit.do_places(arg, &birds);
-    // if r_places.is_err(){
-    //     return Err(r_places.err().unwrap())
-    // }
-    // to_edit = r_places.unwrap();
-
-    // // validate
-    // let result= validate_sighting( sbirds, &mut to_edit);
-    // if result.is_err(){
-    //     return Err(result.err().unwrap());
-    // }
-
-
     let result1 = to_edit.do_bool_places_val(arg, true, birds, sbirds);
     if result1.is_err(){
         return Err(result1.err().unwrap())
@@ -994,7 +1007,153 @@ pub fn delete_sighting(wn: WhatNumber, options: &mut SettingsText ,
 
 }
 
+// Function to split a csv line into Species parts and return species (tab delimited)
+pub fn get_sighting_from_line(line: &str, sbirds: &BTreeMap<String,Species> ) -> Result<Sightings,String> {
+    let mut new = Sightings::new();
+    let temp = line.split("\t");
+    let vec: Vec<&str> = temp.collect();
+    if vec.len() != 21 {
+        return Err("Line does not have 21 fields".to_string());
+    }
+    
+    for i in 0..21 {
+        match i {
+            0 => {
+                new.sname    = vec[i].to_string();
+            }
+            1 => {
+                let r_date = convert_date_text(vec[i]);
+                if r_date.is_err(){
+                    return Err("Line does not have 21 fields".to_string());
+                }
+                new.date     = r_date.unwrap();
+            }
+            2 => {
+                new.location = vec[i].to_string();
+            }
+            3 => {
+                new.town     = vec[i].to_string();
+            }
+            4 => {
+                new.province = vec[i].to_string();
+            }
+            5 => {
+                new.country  = vec[i].to_string();
+            }
+            6 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("seen -> bool parsing error".to_string());
+                }
+                new.seen = result.unwrap();
+            }
+            7 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("heard -> bool parsing error".to_string());
+                }
+                new.heard = result.unwrap();
+            }
+            8 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("ringed -> bool parsing error".to_string());
+                }
+                new.ringed = result.unwrap();
+            }
+            9 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("dead -> bool parsing error".to_string());
+                }
+                new.dead = result.unwrap();
+            }
+            10 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("photo -> bool parsing error".to_string());
+                }
+                new.photo = result.unwrap();
+            }
+            11 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("male -> bool parsing error".to_string());
+                }
+                new.male = result.unwrap();
+            }
+            12 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("female -> bool parsing error".to_string());
+                }
+                new.female = result.unwrap();     
+            }
+            13 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("adult -> bool parsing error".to_string());
+                }
+                new.adult = result.unwrap();      
+            }
+            14 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("immature -> bool parsing error".to_string());
+                }
+                new.immature = result.unwrap();   
+            }
+            15 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("breeding -> bool parsing error".to_string());
+                }
+                new.breeding = result.unwrap(); 
+            }
+            16 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("eggs -> bool parsing error".to_string());
+                }
+                new.eggs = result.unwrap(); 
+            }
+            17 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("nonbreeding -> bool parsing error".to_string());
+                }
+                new.nonbreeding = result.unwrap(); 
+            }
+            18 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("nest -> bool parsing error".to_string());
+                }
+                new.nest = result.unwrap();  
+            }
+            19 => {
+                let result = vec[i].parse::<bool>();
+                if result.is_err(){
+                    return Err("chicks -> bool parsing error".to_string());
+                }
+                new.chicks = result.unwrap();   
+            }
+            20 => {
+                new.comments = vec[i].to_string();
+            }
+            _ => {
+                
+            }
+        }
+    }
+    
+    let result = new.validate(sbirds);
+    if result.is_err(){
+        return Err(result.err().unwrap());
+    }
 
+    return Ok(result.unwrap())
+}
 
 
 
@@ -1575,8 +1734,41 @@ mod tests {
             assert_eq!(ans,16036);
         }
     }
+    
+    
+    #[ignore]
+    #[test]
+    fn t020_import_csv() {
+        // let mut options = SettingsText::new("");
+
+        let source = "./test/store/sightings/sightings.bin";
+        let destination = "./test/sights.bin";
+        copy(source,destination).expect("Failed to copy");
+        let mut sightings = Sightings::load(destination).unwrap();
+        remove_file(destination).expect("Cleanup test failed");
+        
+        let source = "./test/store/species/birds.bin";
+        let destination = "./test/birds.bin";
+        copy(source,destination).expect("Failed to copy");
+        let birds = Species::load(destination).unwrap();
+        let sbirds = make_sname_btree(&birds);
+        remove_file(destination).expect("Cleanup test failed");
+        
+        
+        let source2 = "/DATA/programming/Rust/mybirding/test/store/sightings/sights_small.csv";
+        let destination2 = "./test/sights_small.csv";
+        copy(source2,destination2).expect("Failed to copy");
+        let result = Sightings::import_csv(destination2, &sbirds, &birds);
+        remove_file(destination2).expect("Cleanup test failed");
+
+        if result.is_ok(){
+            sightings = result.unwrap();
+            assert_eq!(sightings.len(),9);
+        }
 
 
+
+    }
 
 
 

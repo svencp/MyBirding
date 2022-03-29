@@ -399,7 +399,7 @@ fn main() {
                 }
                 // sub1 is NONE
                 else {
-                    let message = format!("bimp needs another argument, which is the file name.");
+                    let message = format!("bim needs another argument, which is the file name.");
                     feedback(Feedback::Error, message);
                     exit(17);
                 }
@@ -630,28 +630,26 @@ fn main() {
                         exit(17);
                     }
                     
-                    // lets clear out sightings
-                    sightings = Vec::new();
-                    
                     match ext.unwrap() {
                         "csv" => {
-                            let result = Species::import_csv(&file, &mut birds);
+                            let result = Sightings::import_csv(&file, &sbirds, &birds);
                             if result.is_err(){
                                 let message = result.err().unwrap();
                                 feedback(Feedback::Error, message);
                                 exit(17);
                             }
+                            sightings = result.unwrap();
                             file_change_birds = true;
                         }
                         
                         "json" => {
-                            let result = Species::import(&file);
+                            let result = Sightings::import(&file);
                             if result.is_err(){
                                 let message = result.err().unwrap();
                                 feedback(Feedback::Error, message);
                                 exit(17);
                             }
-                            birds = result.unwrap();
+                            sightings = result.unwrap();
                             file_change_birds = true;
                         }
                         
