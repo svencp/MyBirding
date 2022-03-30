@@ -6,6 +6,7 @@ use std::process::exit;
 use library::settings::*;
 use library::my_file_funcs::*;
 use library::bird_species::*;
+use library::help::*;
 use std::fs::copy;
 use std::path::Path;
 use std::env;
@@ -17,7 +18,7 @@ use crate::library::bird_species_support::*;
 use crate::library::bird_sightings_supp::*;
 
 
-
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 
 
@@ -69,10 +70,10 @@ fn main() {
     // Birds
     let destination_birds = SPECIES_BIN_FILENAME;
     // **************************************************************************************                       Remove Later
-    if ! Path::new(destination_birds).exists() {
-        let source_birds = "./test/store/species/birds.bin";
-        copy(source_birds,destination_birds).expect("Failed to copy");
-    }
+    // if ! Path::new(destination_birds).exists() {
+    //     let source_birds = "./test/store/species/species.bin";
+    //     copy(source_birds,destination_birds).expect("Failed to copy");
+    // }
     let birds_file = Species::load(destination_birds);
     let mut birds_file_ok = false;
     if birds_file.is_ok() {
@@ -89,10 +90,10 @@ fn main() {
     // Sightings
     let destination_sightings = SIGHTINGS_BIN_FILENAME;
     // **************************************************************************************                       Remove Later
-    if ! Path::new(destination_sightings).exists() {
-        let source_sights = "./test/store/sightings/sightings.bin";
-        copy(source_sights,destination_sightings).expect("Failed to copy");
-    }
+    // if ! Path::new(destination_sightings).exists() {
+    //     let source_sights = "./test/store/sightings/sightings.bin";
+    //     copy(source_sights,destination_sightings).expect("Failed to copy");
+    // }
     let sightings_file = Sightings::load(destination_sightings);
     let mut sightings_file_ok = false;
     if sightings_file.is_ok() {
@@ -425,7 +426,14 @@ fn main() {
                 } //end of sub1.is_none()      
             } // end of "bl"
             
+
+            // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    h     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                
+            // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@          @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                
+            "-help"|"-h"|"h"|"help"|"--help"|"--h" => {
+                show_help(options.clone());
+            }
             
+
             // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    o     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                
             // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@          @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                
             "o"    =>  {
@@ -594,7 +602,45 @@ fn main() {
                 }  
             }
             
+
+            "oex"  => {
+                if_sightings_length_is_zero(&sightings);
+                
+                if sub1.is_some(){
+                    let arg = sub1.unwrap().to_lowercase().trim().to_owned();
+                    if arg != "csv"{
+                        let message = format!("Wrong argument given: (either blank or csv)");
+                        feedback(Feedback::Error, message);
+                        exit(17);
+                    }
+                    let path = &Sightings::export_path("csv", &mut options);
+                    let result = Sightings::export_csv(path, &sightings);
+                    if result.is_err(){
+                        let message = result.err().unwrap();
+                        feedback(Feedback::Error, message); 
+                        exit(17)
+                    }
+                }
+                
+                // sub1 is None -> Default to json
+                else {
+                    //Build the file name 
+                    let path = &Sightings::export_path("json", &mut options);
+                    
+                    //Export json
+                    let result = Sightings::export(path, &sightings);
+                    if result.is_err(){
+                        let message = result.err().unwrap();
+                        feedback(Feedback::Error, message); 
+                        exit(17)
+                    }
+                    let number = &sightings.len();
+                    let message = format!("{} records have been exported as a json file.",number);
+                    feedback(Feedback::Info, message);
+                }  
+            } // end of "bex"
             
+
             "of"  => {
                 if_sightings_length_is_zero(&sightings);
                 
@@ -620,6 +666,8 @@ fn main() {
                 }  //end of sub1.is_none()                                
             }// end of "ob"
             
+
+
             "oim"  => {
                 if sub1.is_some(){
                     let file = sub1.unwrap().trim().to_owned();
@@ -632,14 +680,14 @@ fn main() {
                     
                     match ext.unwrap() {
                         "csv" => {
-                            let result = Sightings::import_csv(&file, &sbirds, &birds);
+                            let result = Sightings::import_csv(&file, &sbirds);
                             if result.is_err(){
                                 let message = result.err().unwrap();
                                 feedback(Feedback::Error, message);
                                 exit(17);
                             }
                             sightings = result.unwrap();
-                            file_change_birds = true;
+                            file_change_sightings = true;
                         }
                         
                         "json" => {
@@ -650,7 +698,7 @@ fn main() {
                                 exit(17);
                             }
                             sightings = result.unwrap();
-                            file_change_birds = true;
+                            file_change_sightings = true;
                         }
                         
                         // Other ones
@@ -668,7 +716,7 @@ fn main() {
                     exit(17);
                 }
                 
-            } // end of "bimp"
+            } // end of "oim"
             
             
             "oz" => {
@@ -718,12 +766,11 @@ fn main() {
                     let message = format!("You have not provided any substring for a query.");
                     feedback(Feedback::Error, message);
                 }
-
-
-
             }//end of "sol"
 
-
+            "v"|"V"|"-v"|"-V" => {
+                println!("mybirding version: {}", VERSION);
+            }
 
 
 

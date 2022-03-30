@@ -2180,7 +2180,7 @@ mod tests {
         let dest_sightings = "./test/sightings.json";
         let dest_options = "./test/options.json";
         
-        if Sightings::export(dest_sightings, sightings).is_ok(){
+        if Sightings::export(dest_sightings, &sightings).is_ok(){
             let s1 = Sightings::import(dest_sightings).unwrap();
             remove_file(dest_sightings).expect("Cleanup test failed");
             
@@ -2261,7 +2261,7 @@ mod tests {
         let dest_sightings = "./test/sightings.json";
         let dest_options = "./test/options.json";
         
-        if Sightings::export(dest_sightings, sightings).is_ok(){
+        if Sightings::export(dest_sightings, &sightings).is_ok(){
             let s1 = Sightings::import(dest_sightings).unwrap();
             remove_file(dest_sightings).expect("Cleanup test failed");
             

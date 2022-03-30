@@ -6,6 +6,7 @@ pub mod bird_species_support;
 pub mod bird_sightings;
 pub mod bird_sightings_box;
 pub mod bird_sightings_supp;
+pub mod help;
 
 
 

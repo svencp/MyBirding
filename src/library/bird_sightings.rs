@@ -29,8 +29,8 @@ use termion::{color, style};
 use chrono::prelude::*;
 use chrono::Utc;
 use std::time::{UNIX_EPOCH, Duration};
-use core::str::ParseBoolError;
-use std::io::{BufReader};
+// use core::str::ParseBoolError;
+use std::io::{BufReader, BufWriter};
 use std::fs::File;
 
 
@@ -242,7 +242,7 @@ impl Sightings {
     }   // end of build_species
 
 
-    pub fn export(json_file: &str, obs: Vec<Sightings>) -> Result<(), String> {
+    pub fn export(json_file: &str, obs: &Vec<Sightings>) -> Result<(), String> {
         let path = Path::new(json_file);
         
         let serialized = serde_json::to_string_pretty(&obs);
@@ -264,6 +264,97 @@ impl Sightings {
         }
     }
 
+    pub fn export_path(extension: &str, options: &mut SettingsText ) -> String {
+        let mut assembly = "./".to_string();
+        assembly.push_str(&options.date_time_str());
+        assembly.push_str("sightings.");
+        assembly.push_str(extension);
+        assembly
+    }
+
+    pub fn export_csv(csv_file: &str, sights: &Vec<Sightings>) -> Result<(), String> {
+        let path = Path::new(csv_file);
+        let f = match OpenOptions::new()
+                                        .read(false)
+                                        .write(true)
+                                        .create(true)
+                                        .truncate(true)
+                                        .open(path)  {
+            
+            Err(_) => { return Err("Problem opening export to csv file".to_string()); }
+            Ok(file)   => { file }
+        };
+
+        let mut file = BufWriter::new(f);
+        
+        // Do Header
+        let header = "sname\tdate\tlocation\ttown\tprovince\tcountry\tseen\theard\tringed\tdead\tphoto\tmale\tfemale\tadult\timmature\tbreeding\teggs\tnonbreeding\tnest\tchicks\tcomments\n";
+
+        match file.write_all(header.as_bytes()) {
+            Err(_) => { return Err("Problem writing sightings in csv file".to_string()); } 
+            _      => { } 
+        }
+        
+        let mut counter = 0;
+
+        for v in sights {
+            let mut assembly = String::new();
+
+            assembly.push_str(&v.sname);
+            assembly.push('\t');
+            let date = &v.display_date();
+            assembly.push_str(date);
+            assembly.push('\t');
+            assembly.push_str(&v.location);
+            assembly.push('\t');
+            assembly.push_str(&v.town);
+            assembly.push('\t');
+            assembly.push_str(&v.province);
+            assembly.push('\t');
+            assembly.push_str(&v.country);
+            assembly.push('\t');
+            assembly.push_str(&v.seen.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.heard.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.ringed.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.dead.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.photo.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.male.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.female.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.adult.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.immature.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.breeding.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.eggs.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.nonbreeding.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.nest.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.chicks.to_string());
+            assembly.push('\t');
+            assembly.push_str(&v.comments.to_string());
+            assembly.push('\n');
+            
+            match file.write_all(assembly.as_bytes()) {
+                Err(_) => { return Err("Problem writing species csv file".to_string()); } 
+                _      => { counter += 1 } 
+            }
+        }
+        let message = format!("The birds sightings csv file was exported with {} records in it.",counter);
+        feedback(Feedback::Info, message);
+
+        return Ok(())
+    }
+
 
     pub fn import(json_file: &str) -> Result<Vec<Sightings>, String> {
         let str_file  = std::fs::read_to_string(json_file );
@@ -280,8 +371,7 @@ impl Sightings {
         Ok(map)
     }
     
-    pub fn import_csv(csv_file: &str, sbirds: &BTreeMap<String,Species>, birds: &BTreeMap<String,Species> ) 
-                        -> Result<Vec<Sightings>, String> {
+    pub fn import_csv(csv_file: &str, sbirds: &BTreeMap<String,Species> ) -> Result<Vec<Sightings>, String> {
         let mut counter = 0;
         let mut s: Vec<Sightings> = Vec::new();
        
@@ -619,7 +709,7 @@ impl Sightings {
         //Lets start with sname                                                                 -- sname
         let r_sname = sbirds.get(&self.sname);
         if r_sname.is_none(){
-            return Err("Validation error: sname".to_string())
+            return Err("Validation error: sname    (maybe give a code)".to_string())
         }
 
         if self.date == 0 {
@@ -1257,7 +1347,7 @@ mod tests {
     #[ignore]
     #[test]
     fn t003_build_sighting() {
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -1302,7 +1392,7 @@ mod tests {
         let mut sights = Sightings::import(destination).unwrap();
         remove_file(destination).expect("Cleanup test failed");
         
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -1335,7 +1425,7 @@ mod tests {
             seen, heard, ringed, dead, photo, male, female, adult, immature, breeding, eggs, nonbreeding, nest, chicks, comments);
             
         sights.push(sighting.unwrap());
-        let _rrr = Sightings::export("./test/sights.json", sights);
+        let _rrr = Sightings::export("./test/sights.json", &sights);
         let fff = Sightings::import("./test/sights.json");
         remove_file("./test/sights.json").expect("Cleanup test failed");
         
@@ -1368,7 +1458,7 @@ mod tests {
     #[ignore]
     #[test]
     fn t006_build_sighting() {
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -1493,7 +1583,7 @@ mod tests {
         let mut sightings = Sightings::load(destination).unwrap();
         remove_file(destination).expect("Cleanup test failed");
 
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -1521,7 +1611,7 @@ mod tests {
         let sightings = Sightings::load(destination).unwrap();
         remove_file(destination).expect("Cleanup test failed");
 
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -1564,7 +1654,7 @@ mod tests {
         let mut sightings = Sightings::load(destination).unwrap();
         remove_file(destination).expect("Cleanup test failed");
 
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -1628,7 +1718,7 @@ mod tests {
         let sightings = Sightings::load(destination).unwrap();
         remove_file(destination).expect("Cleanup test failed");
         
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -1657,7 +1747,7 @@ mod tests {
         let mut sightings = Sightings::load(destination).unwrap();
         remove_file(destination).expect("Cleanup test failed");
         
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -1684,7 +1774,7 @@ mod tests {
         let mut sightings = Sightings::load(destination).unwrap();
         remove_file(destination).expect("Cleanup test failed");
         
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -1692,11 +1782,11 @@ mod tests {
         remove_file(destination).expect("Cleanup test failed");
         
         // Lets try addition
-        let mut sub = "0fart#c=spho#d=2022.04.11#a=Sven's Office";
+        let mut sub = "0fart#c=spho#d=2021.04.11#a=Sven's Office";
         let mut last_10 = get_last_10(&sightings);
         let mut result = add_sighting(last_10, &sub, 
                                         &birds, &sbirds, &mut sightings);
-        assert_eq!(result.unwrap(),16037);
+        assert_eq!(result.unwrap(),15908);
         
         sub = "fart#c=spho#d=2022.04.11#a=Sven's Office";
         last_10 = get_last_10(&sightings);
@@ -1718,7 +1808,7 @@ mod tests {
         let mut sightings = Sightings::load(destination).unwrap();
         remove_file(destination).expect("Cleanup test failed");
         
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -1726,12 +1816,12 @@ mod tests {
         remove_file(destination).expect("Cleanup test failed");
         
         let arg1 = "1";
-        let arg2 = "mfapr#d=2022.04.11";
+        let arg2 = "mfapr#d=2021.04.11";
         let old = what_number(&arg1, &sbirds, &sightings);
         let result = edit_sighting(arg2, old, &birds, &sbirds, &mut sightings);
         if result.is_ok(){
             let ans = result.unwrap();
-            assert_eq!(ans,16036);
+            assert_eq!(ans,15907);
         }
     }
     
@@ -1740,14 +1830,14 @@ mod tests {
     #[test]
     fn t020_import_csv() {
         // let mut options = SettingsText::new("");
-
-        let source = "./test/store/sightings/sightings.bin";
-        let destination = "./test/sights.bin";
-        copy(source,destination).expect("Failed to copy");
-        let mut sightings = Sightings::load(destination).unwrap();
-        remove_file(destination).expect("Cleanup test failed");
         
-        let source = "./test/store/species/birds.bin";
+        // let source = "./test/store/sightings/sightings.bin";
+        // let destination = "./test/sights.bin";
+        // copy(source,destination).expect("Failed to copy");
+        let sightings: Vec<Sightings>;
+        // remove_file(destination).expect("Cleanup test failed");
+        
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -1758,16 +1848,16 @@ mod tests {
         let source2 = "/DATA/programming/Rust/mybirding/test/store/sightings/sights_small.csv";
         let destination2 = "./test/sights_small.csv";
         copy(source2,destination2).expect("Failed to copy");
-        let result = Sightings::import_csv(destination2, &sbirds, &birds);
+        let result = Sightings::import_csv(destination2, &sbirds);
         remove_file(destination2).expect("Cleanup test failed");
 
-        if result.is_ok(){
-            sightings = result.unwrap();
-            assert_eq!(sightings.len(),9);
-        }
-
-
-
+        sightings = result.unwrap();
+        let len = sightings.len();
+        assert_eq!(len,9);
+        
+        let s2 = sightings.get(7).unwrap();
+        let non = s2.nonbreeding;
+        assert_eq!(non,true);
     }
 
 

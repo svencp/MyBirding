@@ -823,7 +823,7 @@ mod tests {
         let sightings = Sightings::import(destination).unwrap();
         remove_file(destination).expect("Cleanup test failed");
 
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -917,7 +917,7 @@ mod tests {
         let sightings = Sightings::import(destination).unwrap();
         remove_file(destination).expect("Cleanup test failed");
         
-        let source = "./test/store/species/birds.bin";
+        let source = "./test/store/species/species.bin";
         let destination = "./test/birds.bin";
         copy(source,destination).expect("Failed to copy");
         let birds = Species::load(destination).unwrap();
@@ -977,7 +977,7 @@ mod tests {
 
     #[ignore]
     #[test]
-    fn t006_get_shortcut1() {
+    fn t007_get_shortcut1() {
         let source = "./test/store/sightings/sightings.bin";
         let destination = "./test/sights.bin";
         copy(source,destination).expect("Failed to copy");
@@ -985,11 +985,13 @@ mod tests {
         remove_file(destination).expect("Cleanup test failed");
         
         let ten = get_last_10(&sightings);
-        let arg = "fart1";
-        let res = get_shortcut(ten, arg, &sightings);
-        if res.is_ok(){
-            assert_eq!(res.unwrap().unwrap().date,1638057600);
-        }
+        let mut arg = "fart1";
+        let mut res = get_shortcut(ten.clone(), arg, &sightings);
+        assert_eq!(res.is_ok(), true);
+        
+        arg = "fart";
+        res = get_shortcut(ten, arg, &sightings);
+        assert_eq!(res.unwrap().is_none(), true);
     }
 
 
