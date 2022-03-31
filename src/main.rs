@@ -70,10 +70,10 @@ fn main() {
     // Birds
     let destination_birds = SPECIES_BIN_FILENAME;
     // **************************************************************************************                       Remove Later
-    // if ! Path::new(destination_birds).exists() {
-    //     let source_birds = "./test/store/species/species.bin";
-    //     copy(source_birds,destination_birds).expect("Failed to copy");
-    // }
+    if ! Path::new(destination_birds).exists() {
+        let source_birds = "./test/store/species/species.bin";
+        copy(source_birds,destination_birds).expect("Failed to copy");
+    }
     let birds_file = Species::load(destination_birds);
     let mut birds_file_ok = false;
     if birds_file.is_ok() {
@@ -90,10 +90,10 @@ fn main() {
     // Sightings
     let destination_sightings = SIGHTINGS_BIN_FILENAME;
     // **************************************************************************************                       Remove Later
-    // if ! Path::new(destination_sightings).exists() {
-    //     let source_sights = "./test/store/sightings/sightings.bin";
-    //     copy(source_sights,destination_sightings).expect("Failed to copy");
-    // }
+    if ! Path::new(destination_sightings).exists() {
+        let source_sights = "./test/store/sightings/sightings.bin";
+        copy(source_sights,destination_sightings).expect("Failed to copy");
+    }
     let sightings_file = Sightings::load(destination_sightings);
     let mut sightings_file_ok = false;
     if sightings_file.is_ok() {
@@ -433,7 +433,7 @@ fn main() {
                 show_help(options.clone());
             }
             
-
+            
             // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    o     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                
             // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@          @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                
             "o"    =>  {
@@ -602,7 +602,7 @@ fn main() {
                 }  
             }
             
-
+            
             "oex"  => {
                 if_sightings_length_is_zero(&sightings);
                 
@@ -640,7 +640,7 @@ fn main() {
                 }  
             } // end of "bex"
             
-
+            
             "of"  => {
                 if_sightings_length_is_zero(&sightings);
                 
@@ -666,8 +666,8 @@ fn main() {
                 }  //end of sub1.is_none()                                
             }// end of "ob"
             
-
-
+            
+            
             "oim"  => {
                 if sub1.is_some(){
                     let file = sub1.unwrap().trim().to_owned();
@@ -737,16 +737,16 @@ fn main() {
             }// end of "oz"
             
             
-
+            
             // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    s     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                
             // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@          @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
             
             "so" => {
                 if_birds_length_is_zero(&birds);
                 if_sightings_length_is_zero(&sightings);
-
+                
                 if sub1.is_some(){
-
+                    
                     let r_slice = get_searched_slice_of_sightings(&sub1.unwrap(), &sbirds, &sightings);
                     if r_slice.is_err(){
                         let message = r_slice.err().unwrap();
@@ -759,7 +759,7 @@ fn main() {
                         exit(17);
                     }
                     display_search_results( &options,  &sbirds,r_slice.clone().unwrap().0, r_slice.unwrap().1)
-
+                    
                 }  
                 // Is None
                 else {
@@ -767,23 +767,26 @@ fn main() {
                     feedback(Feedback::Error, message);
                 }
             }//end of "sol"
-
-            "v"|"V"|"-v"|"-V" => {
+            
+            // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    v     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                
+            // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@          @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                
+            
+            "v"|"V"|"-v"|"-V"|"version"|"Version"|"VERSION" => {
                 println!("mybirding version: {}", VERSION);
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
 
 
             // Not a valid first argument 
